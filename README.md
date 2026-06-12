@@ -28,9 +28,27 @@ This project focuses on applying graph centrality metrics to routing strategies 
 - GNN-DQN target (Week 5): PDR > 75%, Delay < 84 ms
 - Paper read: *GNN-Based Routing Optimization in Large-Scale IoT Deployments* — Babaria et al., 2025
 
-## Week 3 — 🔜 Coming Next
+## Week 3 — ML Baseline + Routing Environment ✅
+- Generated 5000-sample labelled routing dataset (3 seeds)
+- Trained Random Forest classifier as ML baseline
+- Built custom Gymnasium routing environment (`envs/routing_env.py`)
+- Tested random agent policy in the environment
 
-## Week 4 —
+## Results (Week 3)
+
+| Method | PDR | Avg Delay | Avg Hops |
+|--------|-----|-----------|----------|
+| RF Baseline | 69.80% | 71.11 ms | 18.09 |
+| Random Agent (Gym env) | 16% | - | - |
+
+- RF beats all Week 2 heuristics on PDR and delay
+- RF feature importance: traffic_load (60%) > betweenness (21%) > closeness (13%) > degree (5%)
+- Random agent confirms environment works — GNN-DQN must beat 16% PDR by a wide margin
+
+## Paper Read
+- Paper 3: *Relational Deep Reinforcement Learning for Routing in Wireless Networks* — Manfredi et al., IEEE INFOCOM 2021
+
+## Week 4 —🔜 Coming Next
 ## Week 5 —
 ## Week 6 —
 ## Week 7 —
