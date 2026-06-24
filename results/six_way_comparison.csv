@@ -1,0 +1,6 @@
+Method,PDR,Avg Hops
+BCR (Week 2),66.7,17.39
+DCR (Week 2),67.07,17.46
+CCR (Week 2),62.43,16.61
+RF  (Week 3),69.8,18.09
+GNN-DQN (Week 5),81.0,2.0
