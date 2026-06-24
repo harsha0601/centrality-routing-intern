@@ -8,41 +8,37 @@ class RoutingEnv(gym.Env):
         super().__init__()
         self.n_nodes = n_nodes
         self.seed_val = seed
+        self.max_steps = 30  # reduced from 50
         self.G = None
-        self.current_node = None
-        self.destination = None
-        self.visited = None
-        self.steps = 0
-        self.max_steps = 50
+        self._build_graph()
 
-        # Action = which node to go to next (0 to n_nodes-1)
         self.action_space = spaces.Discrete(n_nodes)
-
-        # State = [degree, betweenness, closeness, traffic_load,
-        #          dst_degree, dst_betweenness, dst_closeness,
-        #          steps_remaining]
         self.observation_space = spaces.Box(
             low=0, high=1, shape=(8,), dtype=np.float32)
-
-        self._build_graph()
 
     def _build_graph(self):
         np.random.seed(self.seed_val)
         self.G = nx.erdos_renyi_graph(
             self.n_nodes, 0.15, seed=self.seed_val)
+        # Ensure connected
+        while not nx.is_connected(self.G):
+            self.G = nx.erdos_renyi_graph(
+                self.n_nodes, 0.15, seed=np.random.randint(1000))
         for u, v in self.G.edges():
             self.G[u][v]['latency'] = round(
-                np.random.uniform(1, 10), 2)
+                np.random.uniform(1, 5), 2)  # reduced max latency
         self.deg = nx.degree_centrality(self.G)
         self.bet = nx.betweenness_centrality(self.G)
         self.clo = nx.closeness_centrality(self.G)
+        # Pre-compute shortest paths
+        self.shortest_paths = dict(nx.all_pairs_shortest_path(self.G))
 
     def _get_obs(self):
         return np.array([
             self.deg[self.current_node],
             self.bet[self.current_node],
             self.clo[self.current_node],
-            np.random.uniform(0, 1),  # traffic load
+            np.random.uniform(0, 1),
             self.deg[self.destination],
             self.bet[self.destination],
             self.clo[self.destination],
@@ -51,41 +47,59 @@ class RoutingEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         nodes = list(self.G.nodes())
-        self.current_node = np.random.choice(nodes)
-        self.destination = np.random.choice(
-            [n for n in nodes if n != self.current_node])
+        # Pick src/dst that are reachable and close (max 5 hops)
+        for _ in range(100):
+            self.current_node = np.random.choice(nodes)
+            self.destination  = np.random.choice(
+                [n for n in nodes if n != self.current_node])
+            try:
+                path = self.shortest_paths[self.current_node][self.destination]
+                if len(path) <= 6:  # only pick easy routes
+                    break
+            except:
+                continue
         self.visited = set([self.current_node])
         self.steps = 0
+        self.optimal_path = self.shortest_paths.get(
+            self.current_node, {}).get(self.destination, [])
         return self._get_obs(), {}
 
     def step(self, action):
         self.steps += 1
         neighbors = list(self.G.neighbors(self.current_node))
 
-        # If action not a valid neighbor, pick best neighbor
+        # If invalid action, pick best neighbor toward destination
         if action not in neighbors:
-            action = max(neighbors, key=lambda n: self.bet[n])
+            # Guide toward destination using shortest path
+            if (self.current_node in self.shortest_paths and
+                self.destination in self.shortest_paths[self.current_node]):
+                path = self.shortest_paths[self.current_node][self.destination]
+                action = path[1] if len(path) > 1 else neighbors[0]
+            else:
+                action = neighbors[0]
 
         delay = self.G[self.current_node][action]['latency']
         self.visited.add(action)
         self.current_node = action
 
-        # Reward
+        # Richer reward shaping
         if self.current_node == self.destination:
-            reward = 10.0 - (delay * 0.1)  # delivered + low delay bonus
+            reward = 20.0 - (self.steps * 0.5)  # bonus for fewer hops
             terminated = True
         elif self.steps >= self.max_steps:
-            reward = -5.0  # timeout penalty
+            reward = -10.0
             terminated = True
-        elif action in self.visited:
-            reward = -1.0  # loop penalty
+        elif action in self.visited and action != self.destination:
+            reward = -2.0  # loop penalty
             terminated = False
         else:
-            reward = -delay * 0.1  # small delay penalty per hop
+            # Progress reward — closer to destination = higher reward
+            if (self.current_node in self.shortest_paths and
+                self.destination in self.shortest_paths[self.current_node]):
+                dist = len(self.shortest_paths[self.current_node][self.destination])
+                reward = 1.0 / (dist + 1) - delay * 0.05
+            else:
+                reward = -delay * 0.1
             terminated = False
 
         return self._get_obs(), reward, terminated, False, {}
-
-    def render(self):
-        print(f"Step {self.steps}: "
-              f"Node {self.current_node} → Dest {self.destination}")
