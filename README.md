@@ -64,6 +64,18 @@ This project focuses on applying graph centrality metrics to routing strategies 
 - Average hops reduced to 2.0, demonstrating stronger packet delivery and routing efficiency
 - Week 5 result confirms the model outperforms the RF baseline and classical centrality heuristics
 
-## Week 6 —
+## Core Results (Week 5)
+
+| Method | PDR | Avg Hops |
+|--------|-----|----------|
+| BCR | 66.70% | 17.39 |
+| DCR | 67.07% | 17.46 |
+| CCR | 62.43% | 16.61 |
+| RF | 69.80% | 18.09 |
+| **GNN-DQN** | **81.00%** | **2.00** |
+
+**GNN-DQN beats all baselines — +11.2% PDR over RF, -88% hop count**
+
+## Week 6 — 🔜 Coming Next
 ## Week 7 —
 ## Week 8 —
