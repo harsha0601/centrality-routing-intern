@@ -48,7 +48,7 @@ This project focuses on applying graph centrality metrics to routing strategies 
 ## Paper Read
 - Paper 3: *Relational Deep Reinforcement Learning for Routing in Wireless Networks* — Manfredi et al., IEEE INFOCOM 2021
 
-## Week 4 —## Week 4 — GNN Foundations ✅
+## Week 4 — GNN Foundations ✅
 - Installed PyTorch + PyTorch Geometric, verified with the Cora GCN example (23,063 params)
 - Converted the 50-node network simulator graph to PyG format (50 nodes, 358 directed edges, 4 node features)
 - Trained a 2-layer GCN (GCNConv 3→32→16) to predict betweenness centrality from [degree, closeness, traffic_load]
@@ -58,7 +58,12 @@ This project focuses on applying graph centrality metrics to routing strategies 
 ## Paper / Contribution
 - Finalised research question — see `paper/contribution.md`
 - Established the evidence trail: heuristics (62-67% PDR) → RF (69.8% PDR) → GCN structural embeddings (test MSE 0.000055) → GNN-DQN target (Week 5)
-## Week 5 —🔜 Coming Next
+
+## Week 5 — GNN-DQN Evaluation ✅
+- Achieved GNN-DQN PDR 81% vs RF baseline 69.8%
+- Average hops reduced to 2.0, demonstrating stronger packet delivery and routing efficiency
+- Week 5 result confirms the model outperforms the RF baseline and classical centrality heuristics
+
 ## Week 6 —
 ## Week 7 —
 ## Week 8 —
