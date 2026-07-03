@@ -76,6 +76,11 @@ This project focuses on applying graph centrality metrics to routing strategies 
 
 **GNN-DQN beats all baselines — +11.2% PDR over RF, -88% hop count**
 
-## Week 6 — 🔜 Coming Next
-## Week 7 —
+## Week 6 — Evaluation Hardening ✅
+- Topology generalisation: GNN-DQN 73% PDR on unseen 80-node graph
+- Statistical tests: Wilcoxon p=0.065 (trend), paired t-test p=0.087
+- Related work written: paper/related_work.md (3 themes, 500+ words)
+- 3 publication-ready figures saved in /figures at 300 DPI
+
+## Week 7 — 🔜 Paper Writing Sprint
 ## Week 8 —
