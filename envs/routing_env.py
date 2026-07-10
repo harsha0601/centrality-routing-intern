@@ -3,30 +3,44 @@ from gymnasium import spaces
 import networkx as nx
 import numpy as np
 
+
 class RoutingEnv(gym.Env):
     def __init__(self, n_nodes=50, edge_prob=0.15, seed=42):
         super().__init__()
         self.n_nodes = n_nodes
+        self.edge_prob = edge_prob
         self.seed_val = seed
-        self.max_steps = 30  # reduced from 50
-        self.G = None
-        self._build_graph()
 
+        self.G = None
+        self.current_node = None
+        self.destination = None
+        self.visited = None
+        self.steps = 0
+        self.max_steps = 50
+
+        # Action = which node to go to next (0 to n_nodes-1)
         self.action_space = spaces.Discrete(n_nodes)
+
+        # State = [degree, betweenness, closeness, traffic_load,
+        #          dst_degree, dst_betweenness, dst_closeness,
+        #          steps_remaining]
         self.observation_space = spaces.Box(
             low=0, high=1, shape=(8,), dtype=np.float32)
 
+        self._build_graph()
+
     def _build_graph(self):
         np.random.seed(self.seed_val)
-        self.G = nx.erdos_renyi_graph(
-            self.n_nodes, 0.15, seed=self.seed_val)
-        # Ensure connected
-        while not nx.is_connected(self.G):
-            self.G = nx.erdos_renyi_graph(
-                self.n_nodes, 0.15, seed=np.random.randint(1000))
+        # Build graph using provided edge probability; retry until connected
+        self.G = nx.erdos_renyi_graph(self.n_nodes, self.edge_prob, seed=self.seed_val)
+        attempts = 0
+        while not nx.is_connected(self.G) and attempts < 10:
+            self.G = nx.erdos_renyi_graph(self.n_nodes, self.edge_prob, seed=np.random.randint(100000))
+            attempts += 1
+
         for u, v in self.G.edges():
-            self.G[u][v]['latency'] = round(
-                np.random.uniform(1, 5), 2)  # reduced max latency
+            self.G[u][v]['latency'] = round(np.random.uniform(1, 10), 2)
+
         self.deg = nx.degree_centrality(self.G)
         self.bet = nx.betweenness_centrality(self.G)
         self.clo = nx.closeness_centrality(self.G)
@@ -38,7 +52,7 @@ class RoutingEnv(gym.Env):
             self.deg[self.current_node],
             self.bet[self.current_node],
             self.clo[self.current_node],
-            np.random.uniform(0, 1),
+            np.random.uniform(0, 1),  # traffic load
             self.deg[self.destination],
             self.bet[self.destination],
             self.clo[self.destination],
@@ -47,26 +61,29 @@ class RoutingEnv(gym.Env):
 
     def reset(self, seed=None, options=None):
         nodes = list(self.G.nodes())
-        # Pick src/dst that are reachable and close (max 5 hops)
+        # Pick src/dst that are reachable and close (max 6 hops)
         for _ in range(100):
             self.current_node = np.random.choice(nodes)
-            self.destination  = np.random.choice(
-                [n for n in nodes if n != self.current_node])
+            self.destination = np.random.choice([n for n in nodes if n != self.current_node])
             try:
                 path = self.shortest_paths[self.current_node][self.destination]
-                if len(path) <= 6:  # only pick easy routes
+                if len(path) <= 6:
                     break
-            except:
+            except KeyError:
                 continue
+
         self.visited = set([self.current_node])
         self.steps = 0
-        self.optimal_path = self.shortest_paths.get(
-            self.current_node, {}).get(self.destination, [])
+        self.optimal_path = self.shortest_paths.get(self.current_node, {}).get(self.destination, [])
         return self._get_obs(), {}
 
     def step(self, action):
         self.steps += 1
         neighbors = list(self.G.neighbors(self.current_node))
+
+        # If current node has no neighbors, fail early
+        if not neighbors:
+            return self._get_obs(), -5.0, True, False, {}
 
         # If invalid action, pick best neighbor toward destination
         if action not in neighbors:
@@ -77,6 +94,10 @@ class RoutingEnv(gym.Env):
                 action = path[1] if len(path) > 1 else neighbors[0]
             else:
                 action = neighbors[0]
+
+        # Loop penalty: check before adding to visited
+        if action in self.visited:
+            return self._get_obs(), -1.0, False, False, {}
 
         delay = self.G[self.current_node][action]['latency']
         self.visited.add(action)
@@ -89,9 +110,6 @@ class RoutingEnv(gym.Env):
         elif self.steps >= self.max_steps:
             reward = -10.0
             terminated = True
-        elif action in self.visited and action != self.destination:
-            reward = -2.0  # loop penalty
-            terminated = False
         else:
             # Progress reward — closer to destination = higher reward
             if (self.current_node in self.shortest_paths and
@@ -103,3 +121,6 @@ class RoutingEnv(gym.Env):
             terminated = False
 
         return self._get_obs(), reward, terminated, False, {}
+
+    def render(self):
+        print(f"Step {self.steps}: Node {self.current_node} → Dest {self.destination}")
