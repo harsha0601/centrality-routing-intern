@@ -82,5 +82,17 @@ This project focuses on applying graph centrality metrics to routing strategies 
 - Related work written: paper/related_work.md (3 themes, 500+ words)
 - 3 publication-ready figures saved in /figures at 300 DPI
 
-## Week 7 — 🔜 Paper Writing Sprint
-## Week 8 —
+# Week 7 – Research Paper Finalization
+
+## Overview
+Finalized the IEEE research paper by integrating all sections into a single Overleaf LaTeX project and preparing it for submission.
+
+## Work Completed
+- Completed the full IEEE-format research paper.
+- Updated and verified experimental results.
+- Added final figures and tables.
+- Included references and acknowledgments.
+- Generated the final PDF from Overleaf.
+- Shared the paper with Dr. Anil Carie for review.
+
+## Week 8 — 🔜 Revision + Submission
