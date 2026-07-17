@@ -1,55 +1,63 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Set style for academic plotting
-plt.rcParams.update({'font.size': 11, 'axes.labelsize': 12, 'axes.titlesize': 12})
-colors = ['#7f7f7f', '#a6c8e0', '#c6dbef', '#9ecae1', '#1f77b4'] # Grey for baselines, Blue for Ours
+# --- Set Publication Style (IEEE standard) ---
+plt.rcParams.update({
+    'font.size': 12,
+    'font.family': 'serif',
+    'figure.dpi': 300
+})
 
-# -----------------------------------------------------------------
-# FIGURE 1: Packet Delivery Ratio (PDR) Comparison
-# -----------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(7, 4.5))
-methods = ['BCR', 'DCR', 'CCR', 'Random Forest', 'GNN-DQN (Ours)']
-pdr_values = [66.70, 67.07, 62.43, 69.80, 81.00]
-# Adding dummy error bars to represent the standard deviations mentioned in your text
-pdr_errors = [0, 0, 0, 6.68, 11.33] 
+# ==========================================
+# FIGURE 1: PDR Comparison (6 Methods)
+# ==========================================
+methods = ['BCR', 'DCR', 'CCR', 'Random\nForest', 'DQN\n(no GCN)', 'GNN-DQN\n(Ours)']
 
-bars = ax.bar(methods, pdr_values, yerr=pdr_errors, color=colors, edgecolor='black', capsize=5, width=0.6)
+# Using your latest verified numbers from the Jupyter run
+pdr_means = [66.70, 67.07, 62.43, 60.80, 88.70, 70.60]
+pdr_stds = [0, 0, 0, 6.68, 6.53, 11.33] # Error bars for RF, DQN, GNN-DQN
+
+fig, ax = plt.subplots(figsize=(8, 5))
+# Colors: Blue for heuristics, Orange for ML, Green for Ablation, Red for Ours
+colors = ['#4C72B0', '#4C72B0', '#4C72B0', '#DD8452', '#55A868', '#C44E52']
+bars = ax.bar(methods, pdr_means, yerr=pdr_stds, capsize=5, color=colors, edgecolor='black', linewidth=0.8)
+
+# Add value labels on top of bars
+for bar, mean in zip(bars, pdr_means):
+    ax.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 1.5, 
+            f'{mean:.1f}%', ha='center', va='bottom', fontweight='bold')
+
 ax.set_ylabel('Packet Delivery Ratio (%)')
-ax.set_ylim(0, 100)
-ax.grid(axis='y', linestyle='--', alpha=0.7)
-
-# Add values on top of bars
-for bar in bars:
-    yval = bar.get_height()
-    ax.text(bar.get_x() + bar.get_width()/2, yval + 2, f"{yval:.1f}%", ha='center', va='bottom', fontweight='bold')
-# Improve x-axis label layout to avoid overlap
-plt.setp(ax.get_xticklabels(), rotation=30, ha='right')
+ax.set_ylim(0, 110) # Increased ylim so the 88.7% error bar doesn't get cut off
+ax.set_title('Figure 1: PDR Comparison Across Methods (with Ablation)')
+ax.yaxis.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.savefig('fig1_pdr_comparison.png', dpi=300)
-plt.close()
+print("Saved fig1_pdr_comparison.png")
+plt.show()
 
-# -----------------------------------------------------------------
-# FIGURE 2: Average Hop Count Comparison
-# -----------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(7, 4.5))
-hop_values = [17.39, 17.46, 16.61, 18.09, 2.00]
+# ==========================================
+# FIGURE 2: Hop Count Comparison (6 Methods)
+# ==========================================
+hop_means = [17.39, 17.46, 16.61, 18.09, 2.38, 2.00]
 
-bars = ax.bar(methods, hop_values, color=colors, edgecolor='black', width=0.6)
+fig, ax = plt.subplots(figsize=(8, 5))
+colors = ['#4C72B0', '#4C72B0', '#4C72B0', '#DD8452', '#55A868', '#C44E52']
+bars = ax.bar(methods, hop_means, color=colors, edgecolor='black', linewidth=0.8)
+
+# Add value labels
+for bar, mean in zip(bars, hop_means):
+    ax.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 0.5, 
+            f'{mean:.2f}', ha='center', va='bottom', fontweight='bold')
+
 ax.set_ylabel('Average Hop Count')
 ax.set_ylim(0, 22)
-ax.grid(axis='y', linestyle='--', alpha=0.7)
-
-for bar in bars:
-    yval = bar.get_height()
-    ax.text(bar.get_x() + bar.get_width()/2, yval + 0.5, f"{yval:.2f}", ha='center', va='bottom', fontweight='bold')
-
-# Improve x-axis label layout to avoid overlap
-plt.setp(ax.get_xticklabels(), rotation=30, ha='right')
+ax.set_title('Figure 2: Average Hop Count Comparison (with Ablation)')
+ax.yaxis.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.savefig('fig2_hop_comparison.png', dpi=300)
-plt.close()
-
+print("Saved fig2_hop_comparison.png")
+plt.show()
 # -----------------------------------------------------------------
 # FIGURE 3: Topology Generalisation
 # -----------------------------------------------------------------
