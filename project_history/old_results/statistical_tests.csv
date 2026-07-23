@@ -1,0 +1,2 @@
+comparison,n_seeds,gnn_mean,gnn_std,rf_mean,rf_std,wilcoxon_p,ttest_p
+GNN-DQN vs RF,10,70.6,11.33,60.8,6.68,0.0645,0.0869

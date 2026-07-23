@@ -1,0 +1,9 @@
+config,max_steps,random_pdr
+sparse_N50_p0.08,30,31.0
+sparse_N80_p0.06,30,28.0
+sparse_N100_p0.05,30,18.0
+large_N150_p0.05,30,19.0
+large_N200_p0.04,30,22.0
+tightbudget_N80_halved_budget,15,14.0
+tightbudget_N100_halved_budget,15,10.0
+tightbudget_N65_halved_budget,15,19.0

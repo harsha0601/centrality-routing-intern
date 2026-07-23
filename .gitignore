@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.zip
+.DS_Store
+.config/
+sample_data/

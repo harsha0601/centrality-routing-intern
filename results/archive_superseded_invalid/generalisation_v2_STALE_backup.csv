@@ -1,0 +1,7 @@
+model,train_seed,train_pdr_50node,unseen_n_nodes,unseen_edge_prob,unseen_pdr,unseen_avg_hops,unseen_n_delivered
+gnn_dqn_v2,99,100.0,80,0.12,100.0,2.0,100
+gnn_dqn_v2,7,100.0,100,0.1,100.0,3.0,100
+gnn_dqn_v2,13,100.0,65,0.13,100.0,4.0,100
+dqn_v2,99,100.0,80,0.12,100.0,3.0,100
+dqn_v2,7,100.0,100,0.1,100.0,3.0,100
+dqn_v2,13,100.0,65,0.13,100.0,2.0,100

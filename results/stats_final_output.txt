@@ -1,0 +1,92 @@
+
+--- Fleet PDR (training topology, 10 seeds) ---
+GNN-DQN-v2: mean=98.70  n=10
+DQN-v2:     mean=57.30  n=10
+Wilcoxon p = 0.001953
+paired t p = 7.433261e-07
+
+--- Fleet avg_hops (training topology, 10 seeds) ---
+GNN-DQN-v2: mean=2.30  n=10
+DQN-v2:     mean=2.28  n=10
+Wilcoxon p = 0.921875
+paired t p = 7.744698e-01
+
+--- Stress eval: sparse_N50_p0.08 ---
+GNN-DQN-v2: mean=93.60  n=10
+DQN-v2:     mean=28.70  n=10
+Wilcoxon p = 0.001953
+paired t p = 1.555367e-08
+
+--- Stress eval: sparse_N80_p0.06 ---
+GNN-DQN-v2: mean=92.30  n=10
+DQN-v2:     mean=19.20  n=10
+Wilcoxon p = 0.001953
+paired t p = 2.536765e-10
+
+--- Stress eval: sparse_N100_p0.05 ---
+GNN-DQN-v2: mean=95.80  n=10
+DQN-v2:     mean=23.60  n=10
+Wilcoxon p = 0.001953
+paired t p = 8.841288e-11
+
+--- Stress eval: large_N150_p0.05 ---
+GNN-DQN-v2: mean=99.90  n=10
+DQN-v2:     mean=14.00  n=10
+Wilcoxon p = 0.001953
+paired t p = 4.357980e-13
+
+--- Stress eval: large_N200_p0.04 ---
+GNN-DQN-v2: mean=98.80  n=10
+DQN-v2:     mean=12.40  n=10
+Wilcoxon p = 0.001953
+paired t p = 1.270189e-14
+
+--- Stress eval: tightbudget_N80_halved_budget ---
+GNN-DQN-v2: mean=100.00  n=10
+DQN-v2:     mean=45.70  n=10
+Wilcoxon p = 0.001953
+paired t p = 6.397445e-12
+
+--- Stress eval: tightbudget_N100_halved_budget ---
+GNN-DQN-v2: mean=99.30  n=10
+DQN-v2:     mean=34.80  n=10
+Wilcoxon p = 0.001953
+paired t p = 2.391219e-10
+
+--- Stress eval: tightbudget_N65_halved_budget ---
+GNN-DQN-v2: mean=99.70  n=10
+DQN-v2:     mean=46.40  n=10
+Wilcoxon p = 0.001953
+paired t p = 9.514185e-10
+
+--- DQN-v2 vs random-policy baseline, per stress config ---
+sparse_N50_p0.08: DQN-v2 mean=28.7%  random=31.0%  [AT/BELOW RANDOM]
+sparse_N80_p0.06: DQN-v2 mean=19.2%  random=28.0%  [AT/BELOW RANDOM]
+sparse_N100_p0.05: DQN-v2 mean=23.6%  random=18.0%  [above random]
+large_N150_p0.05: DQN-v2 mean=14.0%  random=19.0%  [AT/BELOW RANDOM]
+large_N200_p0.04: DQN-v2 mean=12.4%  random=22.0%  [AT/BELOW RANDOM]
+tightbudget_N80_halved_budget: DQN-v2 mean=45.7%  random=14.0%  [above random]
+tightbudget_N100_halved_budget: DQN-v2 mean=34.8%  random=10.0%  [above random]
+tightbudget_N65_halved_budget: DQN-v2 mean=46.4%  random=19.0%  [above random]
+
+--- Generalisation (standard budget) ---
+     model  train_seed  unseen_n_nodes  unseen_pdr
+gnn_dqn_v2          99              80        95.0
+gnn_dqn_v2           7             100        98.0
+gnn_dqn_v2          13              65        98.0
+    dqn_v2          99              80        46.0
+    dqn_v2           7             100        45.0
+    dqn_v2          13              65        55.0
+
+Random baselines (training topology + generalisation graphs):
+                  config  n_nodes  edge_prob  graph_seed  max_steps  random_pdr
+training_topology_50node       50       0.15          42         30        32.0
+   generalisation_80node       80       0.12          99         30        25.0
+  generalisation_100node      100       0.10           7         30        26.0
+   generalisation_65node       65       0.13          13         30        34.0
+
+--- Pooled GNN-DQN vs Plain DQN (original architecture, regenerated) ---
+GNN-DQN-v2: mean=74.80  n=10
+DQN-v2:     mean=88.70  n=10
+Wilcoxon p = 0.009766
+paired t p = 4.601199e-03

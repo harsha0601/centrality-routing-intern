@@ -1,0 +1,5 @@
+config,n_nodes,edge_prob,graph_seed,max_steps,random_pdr
+training_topology_50node,50,0.15,42,30,32.0
+generalisation_80node,80,0.12,99,30,25.0
+generalisation_100node,100,0.1,7,30,26.0
+generalisation_65node,65,0.13,13,30,34.0
